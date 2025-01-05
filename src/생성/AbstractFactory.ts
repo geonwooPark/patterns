@@ -20,75 +20,77 @@
  * - 클라이언트 : 추상 팩토리를 통해 객체를 생성 및 사용하며, 구체적인 클래스에 의존하지 않음
  */
 
-// 추상 팩토리 (abstract)
-abstract class GUIFactory {
-  abstract createButton(): Button;
-  abstract createCheckbox(): CheckBox;
-}
-
-// 구체 팩토리
-class WindowFactory extends GUIFactory {
-  override createButton() {
-    return new WindowButton();
+(function () {
+  // 추상 팩토리 (abstract)
+  abstract class GUIFactory {
+    abstract createButton(): Button;
+    abstract createCheckbox(): CheckBox;
   }
 
-  override createCheckbox() {
-    return new WindowCheckBox();
+  // 구체 팩토리
+  class WindowFactory extends GUIFactory {
+    override createButton() {
+      return new WindowButton();
+    }
+
+    override createCheckbox() {
+      return new WindowCheckBox();
+    }
   }
-}
 
-class MacFactory extends GUIFactory {
-  override createButton() {
-    return new MacButton();
+  class MacFactory extends GUIFactory {
+    override createButton() {
+      return new MacButton();
+    }
+
+    override createCheckbox() {
+      return new MacCheckBox();
+    }
   }
 
-  override createCheckbox() {
-    return new MacCheckBox();
+  // 추상 제품 (interface)
+  interface Button {
+    click(): string;
   }
-}
 
-// 추상 제품 (interface)
-interface Button {
-  click(): string;
-}
-
-interface CheckBox {
-  check(): string;
-}
-
-// 구체 제품
-class WindowButton implements Button {
-  click() {
-    return "윈도우 버튼 클릭";
+  interface CheckBox {
+    check(): string;
   }
-}
 
-class MacButton implements Button {
-  click() {
-    return "맥 버튼 클릭";
+  // 구체 제품
+  class WindowButton implements Button {
+    click() {
+      return "윈도우 버튼 클릭";
+    }
   }
-}
 
-class WindowCheckBox implements CheckBox {
-  check() {
-    return "윈도우 체크박스 클릭";
+  class MacButton implements Button {
+    click() {
+      return "맥 버튼 클릭";
+    }
   }
-}
 
-class MacCheckBox implements CheckBox {
-  check() {
-    return "맥 체크박스 클릭";
+  class WindowCheckBox implements CheckBox {
+    check() {
+      return "윈도우 체크박스 클릭";
+    }
   }
-}
 
-// 클라이언트
-function clientCode(factory: GUIFactory) {
-  const button = factory.createButton();
-  const checkbox = factory.createCheckbox();
+  class MacCheckBox implements CheckBox {
+    check() {
+      return "맥 체크박스 클릭";
+    }
+  }
 
-  console.log(button.click());
-  console.log(checkbox.check());
-}
+  // 클라이언트
+  function clientCode(factory: GUIFactory) {
+    const button = factory.createButton();
+    const checkbox = factory.createCheckbox();
 
-clientCode(new WindowFactory());
-clientCode(new MacFactory());
+    console.log(button.click());
+    console.log(checkbox.check());
+  }
+
+  clientCode(new WindowFactory());
+  clientCode(new MacFactory());
+})();

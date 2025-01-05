@@ -20,91 +20,93 @@
  * - 클라이언트 : 빌더와 감독자를 사용하여 객체를 생성하는 사용자
  */
 
-// 제품
-class GUI {
-  components: string[] = [];
+(function () {
+  // 제품
+  class GUI {
+    components: string[] = [];
 
-  addComponent(component: string) {
-    this.components.push(component);
+    addComponent(component: string) {
+      this.components.push(component);
+    }
+
+    display() {
+      console.log("GUI 구성 요소");
+      this.components.forEach((component, idx) => {
+        console.log(`${idx + 1}. ${component}`);
+      });
+    }
   }
 
-  display() {
-    console.log("GUI 구성 요소");
-    this.components.forEach((component, idx) => {
-      console.log(`${idx + 1}. ${component}`);
-    });
-  }
-}
+  // 빌더
+  abstract class GUIBuilder {
+    protected gui = new GUI();
 
-// 빌더
-abstract class GUIBuilder {
-  protected gui = new GUI();
+    abstract buildButton(): this;
+    abstract buildCheckbox(): this;
 
-  abstract buildButton(): this;
-  abstract buildCheckbox(): this;
-
-  getGUI() {
-    return this.gui;
-  }
-}
-
-// 구체 빌더
-class WindowGUIBuilder extends GUIBuilder {
-  override buildButton(): this {
-    this.gui.addComponent("윈도우 버튼");
-    return this;
+    getGUI() {
+      return this.gui;
+    }
   }
 
-  override buildCheckbox(): this {
-    this.gui.addComponent("윈도우 체크박스");
-    return this;
-  }
-}
+  // 구체 빌더
+  class WindowGUIBuilder extends GUIBuilder {
+    override buildButton(): this {
+      this.gui.addComponent("윈도우 버튼");
+      return this;
+    }
 
-class MacGUIBuilder extends GUIBuilder {
-  override buildButton(): this {
-    this.gui.addComponent("맥 버튼");
-    return this;
-  }
-
-  override buildCheckbox(): this {
-    this.gui.addComponent("맥 체크박스");
-    return this;
-  }
-}
-
-// 디렉터
-class GUIDirector {
-  private builder: GUIBuilder;
-
-  constructor(builder: GUIBuilder) {
-    this.builder = builder;
+    override buildCheckbox(): this {
+      this.gui.addComponent("윈도우 체크박스");
+      return this;
+    }
   }
 
-  setBuilder(newBuilder: GUIBuilder) {
-    this.builder = newBuilder;
+  class MacGUIBuilder extends GUIBuilder {
+    override buildButton(): this {
+      this.gui.addComponent("맥 버튼");
+      return this;
+    }
+
+    override buildCheckbox(): this {
+      this.gui.addComponent("맥 체크박스");
+      return this;
+    }
   }
 
-  buildBasicGUI() {
-    this.builder.buildButton().buildCheckbox();
+  // 디렉터
+  class GUIDirector {
+    private builder: GUIBuilder;
+
+    constructor(builder: GUIBuilder) {
+      this.builder = builder;
+    }
+
+    setBuilder(newBuilder: GUIBuilder) {
+      this.builder = newBuilder;
+    }
+
+    buildBasicGUI() {
+      this.builder.buildButton().buildCheckbox();
+    }
+
+    buildAdvancedGUI() {
+      this.builder.buildButton().buildCheckbox().buildButton();
+    }
   }
 
-  buildAdvancedGUI() {
-    this.builder.buildButton().buildCheckbox().buildButton();
+  // 클라이언트
+  function clientCode() {
+    const windowsBuilder = new WindowGUIBuilder();
+    const director = new GUIDirector(windowsBuilder);
+    director.buildBasicGUI();
+    windowsBuilder.getGUI().display();
+
+    const macBuilder = new MacGUIBuilder();
+    director.setBuilder(macBuilder);
+    director.buildBasicGUI();
+    macBuilder.getGUI().display();
   }
-}
 
-// 클라이언트
-function clientCode2() {
-  const windowsBuilder = new WindowGUIBuilder();
-  const director = new GUIDirector(windowsBuilder);
-  director.buildBasicGUI();
-  windowsBuilder.getGUI().display();
-
-  const macBuilder = new MacGUIBuilder();
-  director.setBuilder(macBuilder);
-  director.buildBasicGUI();
-  macBuilder.getGUI().display();
-}
-
-clientCode2();
+  clientCode();
+})();
